@@ -61,11 +61,17 @@ class _AppBarcodeState extends State<AppBarcodeScannerWidget> {
   }
 
   void _requestMobilePermission() async {
-    if (await Permission.camera.request().isGranted) {
-      setState(() {
-        _isGranted = true;
-      });
+    bool isGrated = true;
+    if (await Permission.camera.status.isGranted) {
+      isGrated = true;
+    } else {
+      if (await Permission.camera.request().isGranted) {
+        isGrated = true;
+      }
     }
+    setState(() {
+      _isGranted = isGrated;
+    });
   }
 
   @override
@@ -228,7 +234,22 @@ class _AppBarcodeScannerWidgetState extends State<_BarcodeScannerWidget> {
       children: <Widget>[
         Expanded(
           child: _getScanWidgetByPlatform(),
-        )
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            ElevatedButton(
+                onPressed: () {
+                  _scannerController.openFlash();
+                },
+                child: Text("Open")),
+            ElevatedButton(
+                onPressed: () {
+                  _scannerController.closeFlash();
+                },
+                child: Text("Close")),
+          ],
+        ),
       ],
     );
   }
